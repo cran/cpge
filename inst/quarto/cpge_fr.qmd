@@ -1,0 +1,441 @@
+---
+title: "Débouchés et concours CPGE scientifiques"
+format: html
+server: shiny
+execute:
+  echo: false
+---
+
+<style>
+  h1.title{
+    font-size:1em;
+  }
+  body, .main-container {
+    background-color: black !important;
+    color: white !important;
+    width: 100%;
+  }
+  .vis-network {
+    width: 100%;
+    background-color: black !important;
+  }
+</style>
+
+<h2 style="font-size: 0.8em;"> Repérez sur le graphe un domaine ou une école dans le menu déroulant</h2>
+
+```{r context="server", out.width="100%"}
+library(visNetwork)
+library(shiny)
+library(tidyr)
+library(dplyr)
+library(stringr)
+devtools::load_all()
+library(cpge)
+
+
+
+
+
+
+##mat= read.table("https://valerierobert-maths.re/wp-content/uploads/2026/01/ec.txt", header=TRUE)
+
+graph <- data_graph()
+nodes=graph$nodes
+edges=graph$edges
+only_domaine=graph$only_domaine
+only_ecoles=graph$only_ecoles
+only_concours=graph$only_concours
+
+  output$graph<-renderVisNetwork({
+visNetwork(nodes, edges) %>%
+  visEdges(color = list(
+    inherit = FALSE  
+  )) %>%
+     visPhysics(
+    solver = "forceAtlas2Based",
+    forceAtlas2Based = list(
+      avoidOverlap = 4.0,           # augmente fortement l’espacement
+      springLength = 20,           # plus de distance entre nœuds et groupes
+      springConstant = 0.005,        # rigidité des liens légèrement réduite pour plus de flexibilité
+      gravitationalConstant = -20, # plus de répulsion entre groupes
+      centralGravity = 0.01,
+      damping = 0.5                  # stabilise le réseau rapidement
+    )
+  ) %>%
+  #  visPhysics(
+  #   enabled = TRUE,
+  #   solver = "barnesHut",
+  #   barnesHut = list(
+  #     gravitationalConstant = -2600,
+  #     centralGravity = 0.1,
+  #     springLength = 290,
+  #     springConstant = 0.04,
+  #     damping = 0.35,     # mouvement lent et stable
+  #     avoidOverlap = 1.5  # aucun chevauchement
+  #   )
+  # )%>%
+  visLegend(useGroups = TRUE, position = "right") %>%
+  htmlwidgets::onRender("
+    function(el){
+      var legend = el.querySelector('.vis-legend');
+      if(legend){
+        // Bloquer taille
+        legend.style.width = '220px';
+        legend.style.maxWidth = '220px';
+        legend.style.minWidth = '220px';
+        legend.style.overflow = 'hidden';
+        legend.style.flex = '0 0 220px';
+
+        // Position absolue pour qu'elle ne suive pas le zoom/pan
+        legend.style.position = 'absolute';
+        legend.style.top = '10px';
+        legend.style.right = '10px';
+        legend.style.pointerEvents = 'none'; // empêche clics/drag sur légende
+      }
+    }
+  ")%>%
+     
+  htmlwidgets::onRender("
+    function(el){
+      // cibler le select du selectedBy
+      var selects = el.querySelectorAll('select');
+      selects.forEach(function(sel){
+        sel.style.fontSize = '12px';    // taille du texte
+        sel.style.height = '24px';      // hauteur du menu
+        sel.style.width = '170px';      // largeur du menu
+      });
+    }
+  ") %>%
+      #"#2F5FD7"
+    #"#9e9992"
+       # visPhysics(stabilization = TRUE,
+    #solver = "forceAtlas2Based",
+    #forceAtlas2Based = list(gravitationalConstant = -40)
+  #)%>%
+  visOptions(highlightNearest=list(enabled= TRUE,degree=1,"hideColor"="gray"),nodesIdSelection = list(
+    enabled = TRUE,
+    useLabels = TRUE,
+    values = only_domaine,
+    main = "Domaine, secteur :" 
+  ), selectedBy = list(
+      variable = "id",
+      values=c(only_ecoles),
+      main = "Écoles, magistères :",
+      multiple = TRUE,"hideColor"="gray", sort=TRUE, highlight=TRUE)) %>% 
+    visInteraction(selectable = TRUE,navigationButtons = TRUE, zoomView = FALSE) %>% 
+  visGroups(groupname = "X-ENS", color = list(
+      background = "#cea2e4",
+      border = "#cea2e4",
+      highlight = "#cea2e4"
+    ),font = list(size = 32) ) %>%
+  visGroups(groupname = "Mines-Ponts",color= list(
+      background ="#FFD700" ,
+      border = "#FFD700",
+      highlight = "#FFD700" 
+    ),font = list(size = 32) ) %>%
+    visGroups(groupname = "Mines-Telecom",color= list(
+      background = "orange",
+      border ="orange" ,
+      shape="ellipse",
+      highlight = "orange"),font = list(size = 32)) %>%
+   visGroups(groupname = "Centrale-Supelec", color= list(
+      background ="lightgreen" ,
+      shape="ellipse",
+      border ="lightgreen" ,
+      highlight = "lightgreen"),font = list(size = 32)) %>%
+  visGroups(groupname = "CCINP", color =list(
+      background = "lightblue",
+      border = "lightblue",
+      highlight ="lightblue"),font = list(size = 32)) %>%
+      visGroups(groupname = "INP-PC-Chimie", color =list(
+      background = "#0080ff",
+      border = "#0080ff",
+      highlight = "#0080ff"),font = list(size = 32)) %>%
+      visGroups(groupname = "Banque_CCINP_ou_IF", color =list(
+      background = "#2F5FD7",
+      border ="#2F5FD7" ,
+      highlight = "#2F5FD7"),font = list(size = 32)) %>%
+      visGroups(groupname = "Groupe_INSA", color =list(
+      background = "#2EA84F",
+      border = "#2EA84F",
+      highlight = "#2EA84F" ),font = list(size = 32))%>%
+      visGroups(groupname = "e3a-POLYTECH", color =list(
+      background ="#6e9363" ,
+      border = "#6e9363",
+      highlight = "#6e9363"),font = list(size = 32))%>%
+      visGroups(groupname = "EPITA_ISME_IPSA", color =list(
+      background = "#ffcc99",
+      border = "#ffcc99",
+      highlight = "#ffcc99"),font = list(size = 32))%>%
+      visGroups(groupname = "BCEAS", color =list(
+      background = "#7469C1",
+      border = "#7469C1",
+      highlight = "#7469C1"),font = list(size = 32))%>%
+      visGroups(groupname = "Magisteres", color =list(
+      background = "#9B59B6",
+      border = "#9B59B6",
+      highlight = "#9B59B6"),font = list(size = 32))%>%
+  visGroups(groupname = "Domaine", color =list(background="pink",size = 24,border="#e862a5",highlight="#e862a5") ,shape="diamond",font=list(color="#FF69B4", size = 32))  %>%
+      visNodes(color = list(background = "white", font = list(color = "white"))) %>%
+  visClusteringByGroup(groups = c("X-ENS","Mines-Ponts","Mines-Telecom", "Centrale-Supelec","CCINP","INP-PC-Chimie","Banque_CCINP_ou_IF","Groupe_INSA", "e3a-POLYTECH","EPITA_ISME_IPSA","BCEAS","Magisteres"), label = "Concours ", color="white") %>%
+  visLegend() %>%
+  htmlwidgets::onRender("
+    function(el) {
+      let legendItems = el.querySelectorAll('.vis-legend .vis-legend-label');
+      legendItems.forEach(function(label) {
+      label.size=28;
+        label.style.whiteSpace = 'normal';
+        label.style.width = '100px';  // largeur forcée
+        label.style.wordBreak = 'break-word';
+      });
+    }
+  ")%>%
+    visEvents(afterDrawing = htmlwidgets::JS("
+      function(ctx) {
+        var network = this;
+
+        // Si pas de drapeau, on le crée
+        if(!network._handledNodes) network._handledNodes = {};
+
+        var selected = network.getSelectedNodes();
+
+        if(selected.length === 1){
+          var nodeId = selected[0];
+
+          // Si on n'a pas déjà planifié la désélection pour ce nœud
+          if(!network._handledNodes[nodeId]){
+            network._handledNodes[nodeId] = true;
+
+            // Envoie à Shiny
+            Shiny.setInputValue('selected_node', nodeId, {priority:'event'});
+
+            // Désélection automatique après 3 secondes
+            setTimeout(function(){
+              network.unselectNode(nodeId);
+              network._handledNodes[nodeId] = false; // réinitialise
+            }, 3000);
+          }
+        }
+      }
+    "),deselectNode = htmlwidgets::JS("
+    function() {
+      Shiny.setInputValue('selected_node', null);
+    }
+  "),selectNode = htmlwidgets::JS("
+    function(params) {
+      var network = this;
+if(params.nodes.length > 0){
+          Shiny.setInputValue('selected_node', nodeId, {priority:'event'});
+        }
+      // Vérifie qu'un seul nœud est sélectionné
+      if (params.nodes.length !== 1) return;
+
+      var nodeId = params.nodes[0];
+      var node = network.body.nodes[nodeId];
+      Shiny.setInputValue('selected_node', nodeId, {priority: 'event'});
+      setTimeout(function(){
+              this.unselectNode(nodeId);
+            }.bind(this), 3000);
+
+      // Si c'est un cluster reformé (clic sur +)
+      if (node && node.isCluster === true) {
+        // Récupère les IDs des nœuds dans ce cluster
+        var childNodeIds = network.getNodesInCluster(nodeId);
+
+        if (childNodeIds.length === 0) return;
+
+        // Récupère le premier nœud pour connaître sa couleur
+        var firstChild = network.body.nodes[childNodeIds[0]];
+        if (!firstChild) return;
+
+        var colorData = firstChild.options.color;
+        var backgroundColor = (typeof colorData === 'string') ? colorData : colorData.background;
+
+        // Appliquer cette couleur au cluster
+        node.setOptions({
+          color: {
+            background: backgroundColor,
+            border: nodeColor,
+            highlight: {
+              background: backgroundColor,
+              border: 'nodeColor'
+            }
+          },
+          font: {
+          color: nodeColor,
+            size: 30
+          }
+        });
+
+        network.redraw();
+      }
+    }
+  "),stabilized = "function() {
+  
+
+      this.body.nodeIndices.forEach(function(nodeId) {
+        var node = this.body.nodes[nodeId];
+        if (node.isCluster === true) {
+        var nodeColor = node.options.color.background
+          node.setOptions({
+            color: {
+            background: nodeColor,
+            border: nodeColor,
+            highlight: nodeColor
+            },
+            font: {
+              color:nodeColor,
+              background: 'black',
+              size: 30
+            }
+          });
+        }
+      }.bind(this));
+      this.redraw();
+    }",select = "function(nodes) {
+      Shiny.setInputValue('selected_node', nodes.nodes[0],{priority: 'event'});
+    }")
+  
+  
+  })
+  
+  
+  
+  
+  
+output$info <-renderText({
+ req(input$selected_node)
+s1=input$selected_group_js
+
+selected_id <- input$selected_node
+if (!(is.null(s1))){
+  selected_id=selected_group_js}
+ else  if (is.null(selected_id)) {selected_id <- input$graph_nodesIdSelection}
+  req(input$selected_node)
+  
+
+
+  
+ #print(selected_id)
+ 
+  if (selected_id %in% only_domaine){
+  selected_group <- nodes$group[nodes$id == selected_id]
+
+  if (selected_group == "Domaine") {
+    related_ids <- edges$from[edges$to == selected_id]
+    related_labels <- nodes$label[nodes$id %in% related_ids]
+    related_nodes <- nodes$group[which(nodes$id %in% related_ids) ]
+    related_lien_ecole <- nodes$lien_ecole[which(nodes$id %in% related_ids) ]
+    related_lien_concours <- nodes$lien_concours[which(nodes$id %in% related_ids) ]
+
+    if (length(related_labels) == 0) {
+      return(HTML(paste0("Aucune école ou magistère liée au domaine <em>", selected_id, "</em>")))
+    }
+items <- paste0(
+      "<a href='", related_lien_ecole, "' target='_blank'>", related_labels, "</a>"
+    )
+
+items_concours <- paste0(
+      "<a href='", related_lien_concours, "' target='_blank'>", related_nodes, "</a>"
+    )
+#<strong style='font-size:12px;'>style='font-size:12px;'
+    HTML(paste0(
+      "<span style='font-size: 0.7em;'>","Faites dérouler la liste des écoles, magistères liés au domaine  <em>", selected_id, "  (places offertes par filière & domaine à vérifier) : </span></em> </strong>","<span style='font-size: 1em;'>",
+      "<ul >", paste0("<li>", items," (", items_concours, ") ","</li> </span>", collapse = ""), "</ul>"
+    ))
+}
+  } else if (selected_id %in% only_ecoles) {
+    related_ids <- edges$to[edges$from == selected_id]
+    related_labels <- nodes$label[nodes$id %in% related_ids & nodes$group == "Domaine"]
+
+    if (length(related_labels) == 0) {
+      return(HTML(paste0("Aucun domaine lié à l'école ou magistère <em>", selected_id, "</em>")))
+    }
+    
+related_lien_ecole <- nodes$lien_ecole[which(nodes$id==selected_id) ]
+conc=nodes$group[which(nodes$id==selected_id)]
+related_lien_concours <- nodes$lien_concours[which(nodes$group==nodes$group[which(nodes$id==selected_id)]) ][1]
+
+    items <- paste0(
+      "<a href='",related_lien_ecole , "' target='_blank'>", selected_id, "</a>"
+    )
+    items_c <- paste0(
+      "<a href='",related_lien_concours , "' target='_blank'>", conc, "</a>"
+    )
+
+    HTML(paste0(
+      "<strong>Faites dérouler les domaines liés à <em>", items," (",items_c,")", "</em> :</strong>",
+      "<ul>", paste0("<li>", related_labels, "</li>", collapse = ""), "</ul>"
+    ))
+
+  } else if (any(str_detect(selected_id, only_concours))) {
+     selected_id=na.omit(str_extract(selected_id,only_concours))
+    
+if (length(selected_id)==2){
+  selected_id=selected_id[2]
+}
+     
+     
+     related_lien_ecole <- nodes$lien_ecole[which(nodes$group==selected_id) ]
+     
+ec=nodes$id[which(nodes$group==selected_id)]
+related_lien_concours <- nodes$lien_concours[which(nodes$group==selected_id)][1]
+    # HTML(paste0(""))
+     items_c <- paste0(
+      "<a href='",related_lien_concours , "' target='_blank'>", selected_id, "</a>"
+    )
+     items <- paste0(
+      "<a href='",related_lien_ecole , "' target='_blank'>", ec, "</a>"
+    )
+    HTML(paste0(
+      "<span style='font-size: 0.7em;font-weight:strong;'>","Faites dérouler la liste des écoles, magistères du cluster <em>", items_c," (recliquez sur le cluster pour le déplier sur le graphe):</span>", "</em> ", "<ul>", paste0("<li>", items," (",items_c,")", "</li>", collapse = ""), "</ul>"
+    )) 
+     
+     
+     #items_concours <- paste0(
+    #  "<a href='", related_lien_concours, "' target='_blank'>", related_nodes, "</a>"
+   # )
+    #HTML(paste0(
+   #   "<ul style='font-size:12px;'>", paste0("<li>", items," (", items_concours, ") ","</li>", collapse = ""), "</ul>"
+ #   ))
+  } 
+  else
+    {
+    HTML("<em>Type de nœud non reconnu.</em>")
+  }
+})
+
+
+
+```
+```{r, out.width="100%"} 
+library(visNetwork)
+library(shiny)
+
+
+  visNetworkOutput("graph", height = "67vh",width="100%")
+```
+<h2 style="font-size: 0.7em;"> Cliquez sur un domaine ou un cluster ou utilisez le menu déroulant</h2>
+
+```{r} 
+
+#"#9B59B6"
+#"#31636a"
+library(shiny)
+uiOutput("info")
+
+    tags$div(
+      "© Valérie Robert, 2026", 
+      style = "
+        position: absolute;
+        bottom: 5px;
+        right: 10px;
+        font-size: 14px;
+        color: gray;
+        pointer-events: none;"
+    )
+  
+#"#C8A27A"
+#"#0080ff"
+
+```
