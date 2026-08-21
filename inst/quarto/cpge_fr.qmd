@@ -1,5 +1,5 @@
 ---
-title: "Débouchés et concours CPGE scientifiques"
+title: "Débouchés, magistères et concours CPGE scientifiques"
 format: html
 server: shiny
 execute:
@@ -8,7 +8,7 @@ execute:
 
 <style>
   h1.title{
-    font-size:1em;
+    font-size:0.9em;
   }
   body, .main-container {
     background-color: black !important;
@@ -21,16 +21,14 @@ execute:
   }
 </style>
 
-<h2 style="font-size: 0.8em;"> Repérez sur le graphe un domaine ou une école dans le menu déroulant</h2>
-
 ```{r context="server", out.width="100%"}
 library(visNetwork)
 library(shiny)
 library(tidyr)
 library(dplyr)
 library(stringr)
-devtools::load_all()
-library(cpge)
+#devtools::load_all()
+#library(cpge)
 
 
 
@@ -39,7 +37,7 @@ library(cpge)
 
 ##mat= read.table("https://valerierobert-maths.re/wp-content/uploads/2026/01/ec.txt", header=TRUE)
 
-graph <- data_graph()
+graph <- cpge::data_graph()
 nodes=graph$nodes
 edges=graph$edges
 only_domaine=graph$only_domaine
@@ -413,9 +411,9 @@ library(visNetwork)
 library(shiny)
 
 
-  visNetworkOutput("graph", height = "67vh",width="100%")
+  visNetworkOutput("graph", height = "80vh",width="100%")
 ```
-<h2 style="font-size: 0.7em;"> Cliquez sur un domaine ou un cluster ou utilisez le menu déroulant</h2>
+<h2 style="font-size: 0.7em;"> Cliquez sur un domaine ou un cluster pour le déplier/reformer, ou utilisez les menus déroulants pour faire apparaître le listing ci-dessous</h2>
 
 ```{r} 
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Débouchés et concours CPGE scientifiques</title>
+<title>Débouchés, magistères et concours CPGE scientifiques</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -46,7 +46,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Débouchés et concours CPGE scientifiques</h1>
+<h1 class="title">Débouchés, magistères et concours CPGE scientifiques</h1>
 </div>
 
 
@@ -65,7 +65,7 @@ ul.task-list li input[type="checkbox"] {
 
 <style>
   h1.title{
-    font-size:1em;
+    font-size:0.9em;
   }
   body, .main-container {
     background-color: black !important;
@@ -77,16 +77,13 @@ ul.task-list li input[type="checkbox"] {
     background-color: black !important;
   }
 </style>
-<h2 style="font-size: 0.8em;" class="anchored">
-Repérez sur le graphe un domaine ou une école dans le menu déroulant
-</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="visNetwork html-widget html-widget-output shiny-report-size html-fill-item" id="graph" style="width:100%;height:67vh;"></div>
+<div class="visNetwork html-widget html-widget-output shiny-report-size html-fill-item" id="graph" style="width:100%;height:80vh;"></div>
 </div>
 </div>
 <h2 style="font-size: 0.7em;" class="anchored">
-Cliquez sur un domaine ou un cluster ou utilisez le menu déroulant
+Cliquez sur un domaine ou un cluster pour le déplier/reformer, ou utilisez les menus déroulants pour faire apparaître le listing ci-dessous
 </h2>
 <div class="cell">
 <div class="cell-output-display no-overflow-x">
@@ -109,8 +106,8 @@ library(shiny)
 library(tidyr)
 library(dplyr)
 library(stringr)
-devtools::load_all()
-library(cpge)
+#devtools::load_all()
+#library(cpge)
 
 
 
@@ -119,7 +116,7 @@ library(cpge)
 
 ##mat= read.table("https://valerierobert-maths.re/wp-content/uploads/2026/01/ec.txt", header=TRUE)
 
-graph <- data_graph()
+graph <- cpge::data_graph()
 nodes=graph$nodes
 edges=graph$edges
 only_domaine=graph$only_domaine

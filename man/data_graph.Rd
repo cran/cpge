@@ -2,15 +2,30 @@
 % Please edit documentation in R/data_graph.R
 \name{data_graph}
 \alias{data_graph}
-\title{Run Shiny Interactive graph}
+\title{Prepare graph data}
 \usage{
 data_graph()
 }
 \value{
-a graph clustered by different exams and sectors of activity
- for French selective engineering schools and selective higher education
- institutions like Ecoles Normales Superieures
+A list containing:
+\describe{
+  \item{nodes}{A data frame describing graph nodes.}
+  \item{edges}{A data frame describing graph edges.}
+  \item{only_domaine}{A data frame describing the different sectors of activity.}
+   \item{only_ecoles}{A data frame describing the different French schools.}
+    \item{only_concours}{A data frame describing the different French selective exams for engineering and higher education
+ institutions.}
+}
 }
 \description{
-Launch the interactive Shiny graph.
+Creates the nodes, edges objects and the lists of schools or specialized university programs, fields and selective exams required to build the interactive graph.
+You can select on the graph or from the drop-down menu the sector activities corresponding to chosen school for example, visualize which school belongs to a chosen group exam"
+}
+\examples{
+if(interactive()){
+run_graph()
+}
+}
+\references{
+https://www.scei-concours.fr/statistiques.html
 }

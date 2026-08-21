@@ -8,7 +8,7 @@
 
 library(testthat)
 library(cpge)
-test_that("graph_data retourne une structure correcte", {
+test_that("data_graph retourne une structure correcte", {
 
   g <- data_graph()
 
@@ -16,7 +16,7 @@ test_that("graph_data retourne une structure correcte", {
   expect_named(g, c("nodes", "edges","only_domaine", "only_ecoles" ,"only_concours"))
 })
 
-test_that("nodes et edges sont des data frames", {
+test_that("Les objets nodes et edges sont des data frames", {
 
   g <- data_graph()
 
@@ -25,9 +25,9 @@ test_that("nodes et edges sont des data frames", {
 
 })
 
-test_that("graph_data refuse des données invalides", {
+test_that("data_graph refuse des données invalides", {
 
-  expect_error(graph_data(NULL))
+  expect_error(data_graph(NULL))
 
 })
 

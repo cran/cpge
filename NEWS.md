@@ -1,7 +1,7 @@
-# cpge 1.0.1
+# cpge 1.0.2
 
 ## Changes
 
-* Added unit tests for graph data preparation functions.
-* Improved documentation and package checks.
+* Corrected bugs in the run_graph function.
+* Improved documentation.
 * Enhanced reliability of the interactive graph interface.
