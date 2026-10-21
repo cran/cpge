@@ -1,7 +1,5 @@
-# cpge 1.0.2
+# cpge 1.0.3
 
 ## Changes
 
-* Corrected bugs in the run_graph function.
-* Improved documentation.
-* Enhanced reliability of the interactive graph interface.
+* Converted the internal configuration text file into a local `sysdata.rda` object to avoid any internet dependency during checks.

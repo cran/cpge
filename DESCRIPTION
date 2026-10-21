@@ -2,7 +2,7 @@ Package: cpge
 Type: Package
 Title: Interactive Clustered Graph for French Scientific Preparatory
         Classes
-Version: 1.0.2
+Version: 1.0.3
 Authors@R: person(
     "Valérie", "Robert", 
     email = "valerie.robert.math@gmail.com",
@@ -12,12 +12,12 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Depends: R (>= 3.5)
 Imports: dplyr, quarto, shiny, stringr, tidyr, visNetwork
-RoxygenNote: 7.3.3
 Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
 NeedsCompilation: no
-Packaged: 2026-08-21 02:45:48 UTC; rv
+Packaged: 2026-10-21 17:11:52 UTC; rv
 Author: Valérie Robert [aut, cre]
 Maintainer: Valérie Robert <valerie.robert.math@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-08-21 08:50:15 UTC
+Date/Publication: 2026-10-21 17:40:12 UTC

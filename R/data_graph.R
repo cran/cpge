@@ -32,7 +32,7 @@ data_graph <- function() {
 
 
 
-  mat= read.table("http://valerierobert-maths.re/wp-content/uploads/2026/07/valerierobert-maths.re-ec-mag-ec-mag.txt", header=TRUE)
+  mat= config
 
   n=length(mat)
   mat=mat[,c(1,2,8:n)]
